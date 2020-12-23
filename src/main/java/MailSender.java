@@ -6,8 +6,7 @@ import java.util.Properties;
 public class MailSender {
 
 
-    public void sendMail(String recepient) throws MessagingException {
-        System.out.println("Preparing to send!");
+    public void sendMail(String recepient, String textMessage) throws MessagingException {
 
         Properties properties = new Properties();
 
@@ -16,8 +15,9 @@ public class MailSender {
         properties.put("mail.smtp.host", "smtp.gmail.com");
         properties.put("mail.smtp.port", "587");
 
-        String myAccMail = "antiv18@gmail.com";
-        String password = "kG_400wDArambler12";
+        // "Values" is a ENUM. Placed to .gitignore
+        String myAccMail = Values.MAIL_ACC.getTitle();
+        String password = Values.MAIL_VALUE.getTitle();
 
         Session session = Session.getDefaultInstance(properties, new Authenticator() {
             @Override
@@ -26,24 +26,22 @@ public class MailSender {
             }
         });
 
-        Message message = prepareMessage(session, myAccMail, recepient);
+        Message message = prepareMessage(session, myAccMail, recepient, textMessage);
 
         Transport.send(message);
-
-        System.out.println("Message sent successfully!");
 
 
     }
 
-    public Message prepareMessage(Session session, String myAccMail, String recepient) {
+    private Message prepareMessage(Session session, String myAccMail, String recepient, String textMessage) {
 
         Message message = new MimeMessage(session);
 
         try {
             message.setFrom(new InternetAddress(myAccMail));
             message.setRecipient(Message.RecipientType.TO, new InternetAddress(recepient));
-            message.setSubject("Just first e-mail from Java");
-            message.setText("Hello gui");
+            message.setSubject("Оповещение о бессрочном лимите");
+            message.setText(textMessage);
             return message;
         } catch (MessagingException e) {
             e.printStackTrace();
@@ -52,5 +50,4 @@ public class MailSender {
         return null;
 
     }
-
 }
