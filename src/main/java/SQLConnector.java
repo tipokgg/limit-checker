@@ -8,14 +8,14 @@ public class SQLConnector {
         private static Connection connection;
         private static Statement statement;
         // "Values" is a ENUM. Placed to .gitignore
-        private static final String DB_JDBC = Values.DB_JDBC.getTitle();
-        private static final String USER = Values.DB_USER.getTitle();
-        private static final String VALUE = Values.DB_VALUE.getTitle();
+        private static final String DB_JDBC = SecretsService.getProperty("DB_BILLING");
+        private static final String USER = SecretsService.getProperty("DB_USER");
+        private static final String PASS = SecretsService.getProperty("DB_PASS");;
 
         static void connect() {
             try {
                 Class.forName("com.mysql.cj.jdbc.Driver");
-                connection = DriverManager.getConnection(DB_JDBC, USER, VALUE);
+                connection = DriverManager.getConnection(DB_JDBC, USER, PASS);
                 statement = connection.createStatement();
             } catch (ClassNotFoundException | SQLException e) {
                 throw new RuntimeException(e);
@@ -36,7 +36,8 @@ public class SQLConnector {
 
             List<String> list = new ArrayList<>();
 
-            String query = "SELECT title FROM contract WHERE id NOT IN " +
+            String query = "SELECT title FROM contract " +
+                    "WHERE id NOT IN " +
                     "(SELECT cid FROM contract_limit_period) AND closesumma < 0 AND mode = 1";
             try (ResultSet set = statement.executeQuery(query)) {
 

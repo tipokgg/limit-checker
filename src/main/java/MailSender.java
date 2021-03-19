@@ -15,18 +15,17 @@ public class MailSender {
         properties.put("mail.smtp.host", "smtp.gmail.com");
         properties.put("mail.smtp.port", "587");
 
-        // "Values" is a ENUM. Placed to .gitignore
-        String myAccMail = Values.MAIL_ACC.getTitle();
-        String password = Values.MAIL_VALUE.getTitle();
+        String login = SecretsService.getProperty("MAIL_USER");
+        String password = SecretsService.getProperty("MAIL_PASS");
 
         Session session = Session.getDefaultInstance(properties, new Authenticator() {
             @Override
             protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(myAccMail, password);
+                return new PasswordAuthentication(login, password);
             }
         });
 
-        Message message = prepareMessage(session, myAccMail, recepient, textMessage);
+        Message message = prepareMessage(session, login, recepient, textMessage);
 
         Transport.send(message);
 
